@@ -14,6 +14,9 @@ import argparse
 from models import *
 from utils import progress_bar
 
+import pandas as pd
+import numpy as np
+import time
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -100,6 +103,8 @@ def train(epoch):
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+    return train_loss / (batch_idx + 1), 100. * correct / total, correct, total
+
 
 def test(epoch):
     global best_acc
@@ -120,6 +125,7 @@ def test(epoch):
 
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                 % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+    return test_loss / (batch_idx + 1), 100. * correct / total
 
     # Save checkpoint.
     acc = 100.*correct/total
@@ -135,7 +141,31 @@ def test(epoch):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
 
-
+log_df = pd.DataFrame(columns=['epoch_number', 'train-test', 'time', 'loss', 'accuracy'])
+## Train:1
+## Test: 0
+start_time = time.time()
 for epoch in range(start_epoch, start_epoch+200):
-    train(epoch)
-    test(epoch)
+    start_time = time.time()
+    train_loss, train_accuracy =  train(epoch)
+    iteration_train_time = time.time() - start_time
+
+    start_time = time.time()
+    test_loss, test_accuracy =test(epoch)
+    iteration_test_time = time.time() - start_time
+
+    buf_dict_train = {'epoch_number': epoch,
+                      'train-test': 1,
+                      'time': iteration_train_time,
+                      'loss': train_loss,
+                      'accuracy': train_accuracy}
+    buf_dict_test = {'epoch_number': epoch,
+                      'train-test': 0,
+                      'time': iteration_test_time,
+                      'loss': test_loss,
+                      'accuracy': test_accuracy}
+    # loc[nir_caviar_forward_model_EW.shape[0]] = list(buf_dict.values())
+    log_df.loc[log_df.shape[0]] = list(buf_dict_train.values())
+    log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
+
+# pd.to_numeric(
