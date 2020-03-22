@@ -55,7 +55,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-net = ResNet18()
+# net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
 # net = DenseNet121()
@@ -67,7 +67,7 @@ net = ResNet18()
 # net = SENet18()
 # net = ShuffleNetV2(1)
 # net = EfficientNetB0()
-net = net.to(device)
+# net = net.to(device)
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
@@ -142,12 +142,62 @@ def test(epoch):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
 
+
 SDG_dict_params = {'params': net.parameters(),
                    'lr': 0.1,
                    'momentum': 0.9,
                    'weight_decay': 5e-4}
-alg_name = ["SDG"]
-model_name = ["ResNet18"]
+
+Adagrad_dict_params = {'params': net.parameters(),
+                       'lr': 0.1}
+
+Adam_dict_params = {'params': net.parameters(),
+                       'lr': 0.1}
+
+LBFGS_dict_params = {'params': net.parameters(),
+                    'lr': 0.1}
+optimizer_params_list = [optim.SGD(**SDG_dict_params),
+                         optim.Adagrad(**Adagrad_dict_params),
+                         optim.Adam(**Adam_dict_params),
+                         optim.LBGFS(**LBFGS_dict_params)]
+
+optimizer_name_list= ["SGD", "Adamgrad", "Adam", "LBFGS"]
+
+net = VGG('VGG19')
+net = ResNet18()
+net = PreActResNet18()
+net = GoogLeNet()
+net = DenseNet121()
+net = ResNeXt29_2x64d()
+net = MobileNet()
+net = MobileNetV2()
+net = DPN92()
+net = ShuffleNetG2()
+net = SENet18()
+net = ShuffleNetV2(1)
+net = EfficientNetB0()
+net = net.to(device)
+
+model_list = [VGG('VGG19'),
+                   ResNet18(),
+                   PreActResNet18(),
+                   GoogLeNet(),
+                   DenseNet121(),
+                   ResNeXt29_2x64d(),
+                   MobileNet(),
+                   MobileNetV2(),
+                   DPN92(),
+                   SENet18(),
+                   EfficientNetB0()]
+
+model_name_list = ["VGG", "ResNet18", "PreActResNet18",
+                   "GoogLeNet", "DenseNet121", "ResNeXt29_2x64d",
+                   "MobileNet", "MobileNetV2", "DPN92",
+                   "SENet18", "EfficientNetB0"]
+
+for alg_name, optimizer in zip()
+# alg_name = ["SDG"]
+# model_name = ["ResNet18"]
 criterion = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
 optimizer = optim.SGD(**SDG_dict_params)
@@ -155,7 +205,7 @@ log_df = pd.DataFrame(columns=['epoch_number', 'train-test', 'time', 'loss', 'ac
 ## Train:1
 ## Test: 0
 start_time = time.time()
-for epoch in range(start_epoch, start_epoch+200):
+for epoch in range(start_epoch, start_epoch+50):
     start_time = time.time()
     train_loss, train_accuracy = train(epoch)
     iteration_train_time = time.time() - start_time
@@ -191,5 +241,3 @@ with open(dir_name + 'parameters.json', 'w') as f:
     json.dump(SDG_dict_params, f)
 log_df['train-test'] = pd.to_numeric(log_df['train-test'], downcast='unsigned')
 log_df.to_csv(dir_name + "/log.csv")
-
-# pd.to_numeric(
