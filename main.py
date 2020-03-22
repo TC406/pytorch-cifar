@@ -17,6 +17,9 @@ from utils import progress_bar
 import pandas as pd
 import numpy as np
 import time
+import datetime
+from pathlib import Path
+import json
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -52,7 +55,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-# net = ResNet18()
+net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
 # net = DenseNet121()
@@ -63,7 +66,7 @@ print('==> Building model..')
 # net = ShuffleNetG2()
 # net = SENet18()
 # net = ShuffleNetV2(1)
-net = EfficientNetB0()
+# net = EfficientNetB0()
 net = net.to(device)
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
@@ -78,8 +81,6 @@ if args.resume:
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
 
 # Training
 def train(epoch):
@@ -141,13 +142,22 @@ def test(epoch):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
 
+SDG_dict_params = {'params': net.parameters(),
+                   'lr': 0.1,
+                   'momentum': 0.9,
+                   'weight_decay': 5e-4}
+alg_name = ["SDG"]
+model_name = ["ResNet18"]
+criterion = nn.CrossEntropyLoss()
+# optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
+optimizer = optim.SGD(**SDG_dict_params)
 log_df = pd.DataFrame(columns=['epoch_number', 'train-test', 'time', 'loss', 'accuracy'])
 ## Train:1
 ## Test: 0
 start_time = time.time()
 for epoch in range(start_epoch, start_epoch+200):
     start_time = time.time()
-    train_loss, train_accuracy =  train(epoch)
+    train_loss, train_accuracy = train(epoch)
     iteration_train_time = time.time() - start_time
 
     start_time = time.time()
@@ -167,5 +177,19 @@ for epoch in range(start_epoch, start_epoch+200):
     # loc[nir_caviar_forward_model_EW.shape[0]] = list(buf_dict.values())
     log_df.loc[log_df.shape[0]] = list(buf_dict_train.values())
     log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
+
+
+del SDG_dict_params['params']
+parameters = tuple(SDG_dict_params.values())
+string_parameters = "%1.1f_"*len(parameters)%parameters
+SDG_dict_params['algorithm'] = alg_name[0]
+now = datetime.datetime.now()
+dir_name = ("outputs/" + model_name[0] + "/" + alg_name[0] + "/"
+            + string_parameters + now.strftime("_%d_%H_%m_%S"))
+Path(dir_name).mkdir(parents=True, exist_ok=True)
+with open(dir_name + 'parameters.json', 'w') as f:
+    json.dump(SDG_dict_params, f)
+log_df['train-test'] = pd.to_numeric(log_df['train-test'], downcast='unsigned')
+log_df.to_csv(dir_name + "/log.csv")
 
 # pd.to_numeric(
