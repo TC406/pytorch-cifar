@@ -213,7 +213,7 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list, op
         start_time = time.time()
         for epoch in range(start_epoch, start_epoch+50):
             start_time = time.time()
-            train_loss, train_accuracy = train(epoch)
+            train_loss, train_accuracy, _, _ = train(epoch)
             iteration_train_time = time.time() - start_time
 
             start_time = time.time()
