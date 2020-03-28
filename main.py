@@ -206,52 +206,52 @@ model_name_list = ["VGG", "ResNet18", "PreActResNet18",
 for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list[:2],
                                                        optimizers_list[:2],
                                                        optimizer_name_list[:2]):
-    for model_name, net in zip(model_name_list, model_list):
-        net = net.to(device)
-        # alg_name = ["SGD"]
-        # model_name = ["ResNet18"]
-        criterion = nn.CrossEntropyLoss()
-        # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
-        # optimizer = optim.SGD(**SGD_dict_params)
-        log_df = pd.DataFrame(columns=['epoch_number', 'train-test', 'time', 'loss', 'accuracy'])
-        ## Train:1
-        ## Test: 0
+    # for model_name, net in zip(model_name_list, model_list):
+    net = net.to(device)
+    # alg_name = ["SGD"]
+    # model_name = ["ResNet18"]
+    criterion = nn.CrossEntropyLoss()
+    # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
+    # optimizer = optim.SGD(**SGD_dict_params)
+    log_df = pd.DataFrame(columns=['epoch_number', 'train-test', 'time', 'loss', 'accuracy'])
+    ## Train:1
+    ## Test: 0
+    start_time = time.time()
+    for epoch in range(start_epoch, start_epoch+3):
         start_time = time.time()
-        for epoch in range(start_epoch, start_epoch+3):
-            start_time = time.time()
-            train_loss, train_accuracy, _, _ = train(epoch)
-            iteration_train_time = time.time() - start_time
+        train_loss, train_accuracy, _, _ = train(epoch)
+        iteration_train_time = time.time() - start_time
 
-            start_time = time.time()
-            test_loss, test_accuracy =test(epoch)
-            iteration_test_time = time.time() - start_time
+        start_time = time.time()
+        test_loss, test_accuracy =test(epoch)
+        iteration_test_time = time.time() - start_time
 
-            buf_dict_train = {'epoch_number': epoch,
-                              'train-test': 1,
-                              'time': iteration_train_time,
-                              'loss': train_loss,
-                              'accuracy': train_accuracy}
-            buf_dict_test = {'epoch_number': epoch,
-                              'train-test': 0,
-                              'time': iteration_test_time,
-                              'loss': test_loss,
-                              'accuracy': test_accuracy}
-            # loc[nir_caviar_forward_model_EW.shape[0]] = list(buf_dict.values())
-            log_df.loc[log_df.shape[0]] = list(buf_dict_train.values())
-            log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
+        buf_dict_train = {'epoch_number': epoch,
+                          'train-test': 1,
+                          'time': iteration_train_time,
+                          'loss': train_loss,
+                          'accuracy': train_accuracy}
+        buf_dict_test = {'epoch_number': epoch,
+                          'train-test': 0,
+                          'time': iteration_test_time,
+                          'loss': test_loss,
+                          'accuracy': test_accuracy}
+        # loc[nir_caviar_forward_model_EW.shape[0]] = list(buf_dict.values())
+        log_df.loc[log_df.shape[0]] = list(buf_dict_train.values())
+        log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
 
-        optimizer_params_buf = optimizer_params.copy()
-        optimizer_params_buf = removekey(optimizer_params_buf, 'params')
-        parameters = tuple(optimizer_params_buf.values())
-        string_parameters = "%1.1f_"*len(parameters)%parameters
-        optimizer_params_buf['algorithm'] = optimizer_name
-        now = datetime.datetime.now()
-        dir_name = ("outputs/" + model_name[0] + "/" + optimizer_name + "/"
-                    + string_parameters + now.strftime("_%d_%H_%m_%S"))
-        Path(dir_name).mkdir(parents=True, exist_ok=True)
-        with open(dir_name + 'parameters.json', 'w') as f:
-            json.dump(optimizer_params_buf, f)
-        log_df['train-test'] = pd.to_numeric(log_df['train-test'], downcast='unsigned')
-        log_df.to_csv(dir_name + "/log.csv")
-        net = net.to('cpu')
-        del net
+    optimizer_params_buf = optimizer_params.copy()
+    optimizer_params_buf = removekey(optimizer_params_buf, 'params')
+    parameters = tuple(optimizer_params_buf.values())
+    string_parameters = "%1.1f_"*len(parameters)%parameters
+    optimizer_params_buf['algorithm'] = optimizer_name
+    now = datetime.datetime.now()
+    dir_name = ("outputs/" + model_name[0] + "/" + optimizer_name + "/"
+                + string_parameters + now.strftime("_%d_%H_%m_%S"))
+    Path(dir_name).mkdir(parents=True, exist_ok=True)
+    with open(dir_name + 'parameters.json', 'w') as f:
+        json.dump(optimizer_params_buf, f)
+    log_df['train-test'] = pd.to_numeric(log_df['train-test'], downcast='unsigned')
+    log_df.to_csv(dir_name + "/log.csv")
+    # net = net.to('cpu')
+    # del net
