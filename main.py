@@ -239,7 +239,7 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list, op
             log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
 
 
-        removekey(optimizer_params, 'params')
+        optimizer_params = removekey(optimizer_params, 'params')
         parameters = tuple(optimizer_params.values())
         string_parameters = "%1.1f_"*len(parameters)%parameters
         optimizer_params['algorithm'] = optimizer_name
