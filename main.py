@@ -211,7 +211,7 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list, op
         ## Train:1
         ## Test: 0
         start_time = time.time()
-        for epoch in range(start_epoch, start_epoch+50):
+        for epoch in range(start_epoch, start_epoch+3):
             start_time = time.time()
             train_loss, train_accuracy, _, _ = train(epoch)
             iteration_train_time = time.time() - start_time
