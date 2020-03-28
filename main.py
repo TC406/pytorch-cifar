@@ -238,17 +238,17 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list, op
             log_df.loc[log_df.shape[0]] = list(buf_dict_train.values())
             log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
 
-
-        optimizer_params = removekey(optimizer_params, 'params')
-        parameters = tuple(optimizer_params.values())
+        optimizer_params_buf = optimizer_params.copy()
+        optimizer_params_buf = removekey(optimizer_params_buf, 'params')
+        parameters = tuple(optimizer_params_buf.values())
         string_parameters = "%1.1f_"*len(parameters)%parameters
-        optimizer_params['algorithm'] = optimizer_name
+        optimizer_params_buf['algorithm'] = optimizer_name
         now = datetime.datetime.now()
         dir_name = ("outputs/" + model_name[0] + "/" + optimizer_name + "/"
                     + string_parameters + now.strftime("_%d_%H_%m_%S"))
         Path(dir_name).mkdir(parents=True, exist_ok=True)
         with open(dir_name + 'parameters.json', 'w') as f:
-            json.dump(optimizer_params, f)
+            json.dump(optimizer_params_buf, f)
         log_df['train-test'] = pd.to_numeric(log_df['train-test'], downcast='unsigned')
         log_df.to_csv(dir_name + "/log.csv")
         net = net.to('cpu')
