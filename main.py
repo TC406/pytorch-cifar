@@ -163,7 +163,7 @@ optimizer_params_list = [SGD_dict_params, Adagrad_dict_params, Adam_dict_params,
 optimizers_list = [optim.SGD(**SGD_dict_params),
                    optim.Adagrad(**Adagrad_dict_params),
                    optim.Adam(**Adam_dict_params),
-                   optim.LBGFS(**LBFGS_dict_params)]
+                   optim.LBFGS(**LBFGS_dict_params)]
 
 optimizer_name_list= ["SGD", "Adamgrad", "Adam", "LBFGS"]
 
