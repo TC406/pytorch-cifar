@@ -203,7 +203,7 @@ model_name_list = ["VGG", "ResNet18", "PreActResNet18",
                    "MobileNet", "MobileNetV2", "DPN92",
                    "SENet18", "EfficientNetB0"]
 
-for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list, optimizers_list, optimizer_name_list):
+for optimizer_params, optimizer, optimizer_name in list(zip(optimizer_params_list, optimizers_list, optimizer_name_list))[:2]:
     for model_name, net in zip(model_name_list, model_list):
         net = net.to(device)
         # alg_name = ["SGD"]
