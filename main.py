@@ -82,6 +82,10 @@ if args.resume:
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
+def removekey(d, key):
+    r = dict(d)
+    del r[key]
+    return r
 
 # Training
 def train(epoch):
@@ -211,7 +215,7 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list, op
         ## Train:1
         ## Test: 0
         start_time = time.time()
-        for epoch in range(start_epoch, start_epoch+3):
+        for epoch in range(start_epoch, start_epoch+0):
             start_time = time.time()
             train_loss, train_accuracy, _, _ = train(epoch)
             iteration_train_time = time.time() - start_time
@@ -235,7 +239,7 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list, op
             log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
 
 
-        del optimizer_params['params']
+        removekey(optimizer_params, 'params')
         parameters = tuple(optimizer_params.values())
         string_parameters = "%1.1f_"*len(parameters)%parameters
         optimizer_params['algorithm'] = optimizer_name
