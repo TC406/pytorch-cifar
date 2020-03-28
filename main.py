@@ -68,6 +68,7 @@ print('==> Building model..')
 # net = ShuffleNetV2(1)
 # net = EfficientNetB0()
 # net = net.to(device)
+net = ResNet18()
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
@@ -166,20 +167,20 @@ optimizers_list = [optim.SGD(**SGD_dict_params),
 
 optimizer_name_list= ["SGD", "Adamgrad", "Adam", "LBFGS"]
 
-net = VGG('VGG19')
+# net = VGG('VGG19')
 net = ResNet18()
-net = PreActResNet18()
-net = GoogLeNet()
-net = DenseNet121()
-net = ResNeXt29_2x64d()
-net = MobileNet()
-net = MobileNetV2()
-net = DPN92()
-net = ShuffleNetG2()
-net = SENet18()
-net = ShuffleNetV2(1)
-net = EfficientNetB0()
-net = net.to(device)
+# net = PreActResNet18()
+# net = GoogLeNet()
+# net = DenseNet121()
+# net = ResNeXt29_2x64d()
+# net = MobileNet()
+# net = MobileNetV2()
+# net = DPN92()
+# net = ShuffleNetG2()
+# net = SENet18()
+# net = ShuffleNetV2(1)
+# net = EfficientNetB0()
+# net = net.to(device)
 
 model_list = [VGG('VGG19'),
                    ResNet18(),
