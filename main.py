@@ -262,7 +262,7 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list,
     dir_name = ("outputs/" + "ResNet18" + "/" + optimizer_name + "/"
                 + string_parameters + now.strftime("_%d_%H_%m_%S"))
     Path(dir_name).mkdir(parents=True, exist_ok=True)
-    with open(dir_name + 'parameters.json', 'w') as f:
+    with open(dir_name + '/parameters.json', 'w') as f:
         json.dump(optimizer_params_buf, f)
     log_df['train-test'] = pd.to_numeric(log_df['train-test'], downcast='unsigned')
     log_df.to_csv(dir_name + "/log.csv")
