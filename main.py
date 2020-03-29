@@ -246,7 +246,7 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list[:2]
     string_parameters = "%1.1f_"*len(parameters)%parameters
     optimizer_params_buf['algorithm'] = optimizer_name
     now = datetime.datetime.now()
-    dir_name = ("outputs/" + model_name[0] + "/" + optimizer_name + "/"
+    dir_name = ("outputs/" + "ResNet18" + "/" + optimizer_name + "/"
                 + string_parameters + now.strftime("_%d_%H_%m_%S"))
     Path(dir_name).mkdir(parents=True, exist_ok=True)
     with open(dir_name + 'parameters.json', 'w') as f:
