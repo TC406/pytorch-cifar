@@ -218,11 +218,11 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list,
     criterion = nn.CrossEntropyLoss()
     # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
     # optimizer = optim.SGD(**SGD_dict_params)
-    log_df = pd.DataFrame(columns=['epoch_number', 'train-test', 'time', 'loss', 'accuracy'])
+    log_df = pd.DataFrame(columns=['epoch_number','train-test','time','loss','accuracy'])
     ## Train:1
     ## Test: 0
     start_time = time.time()
-    for epoch in range(start_epoch, start_epoch+20):
+    for epoch in range(start_epoch, start_epoch+3):
         start_time = time.time()
         try:
             train_loss, train_accuracy, _, _ = train(epoch)
