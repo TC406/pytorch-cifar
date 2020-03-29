@@ -206,6 +206,7 @@ model_name_list = ["VGG", "ResNet18", "PreActResNet18",
 for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list,
                                                        optimizers_list,
                                                        optimizer_name_list):
+    print(optimizer_name)
     net = ResNet18()
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
