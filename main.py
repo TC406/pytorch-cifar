@@ -203,11 +203,15 @@ model_name_list = ["VGG", "ResNet18", "PreActResNet18",
                    "MobileNet", "MobileNetV2", "DPN92",
                    "SENet18", "EfficientNetB0"]
 
-for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list[:2],
-                                                       optimizers_list[:2],
-                                                       optimizer_name_list[:2]):
-    # for model_name, net in zip(model_name_list, model_list):
+for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list,
+                                                       optimizers_list,
+                                                       optimizer_name_list):
+    net = ResNet18()
+    if device == 'cuda':
+        net = torch.nn.DataParallel(net)
+        cudnn.benchmark = True
     net = net.to(device)
+    # for model_name, net in zip(model_name_list, model_list):
     # alg_name = ["SGD"]
     # model_name = ["ResNet18"]
     criterion = nn.CrossEntropyLoss()
@@ -219,11 +223,19 @@ for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list[:2]
     start_time = time.time()
     for epoch in range(start_epoch, start_epoch+3):
         start_time = time.time()
-        train_loss, train_accuracy, _, _ = train(epoch)
+        try:
+            train_loss, train_accuracy, _, _ = train(epoch)
+        except:
+            print("Error on train on " + optimizer_name)
+            break
         iteration_train_time = time.time() - start_time
 
         start_time = time.time()
-        test_loss, test_accuracy =test(epoch)
+        try:
+            test_loss, test_accuracy = test(epoch)
+        except:
+            print("Error on test on " + optimizer_name)
+            break
         iteration_test_time = time.time() - start_time
 
         buf_dict_train = {'epoch_number': epoch,
