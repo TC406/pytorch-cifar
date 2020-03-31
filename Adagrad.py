@@ -149,7 +149,7 @@ def test(epoch, batch_size):
         best_acc = acc
 
 
-batch_sizes = [8, 200, 1000]
+batch_sizes = [8, 64, 512]
 
 
 SGD_dict_params = {'params': net.parameters(),
