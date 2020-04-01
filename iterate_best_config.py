@@ -154,7 +154,6 @@ optimizers_param_json_path = glob.glob("best_configs/*.json")
 
 for param_json_path in optimizers_param_json_path:
     net = ResNet18()
-    optimizer_params = params_dict.copy()
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
         cudnn.benchmark = True
@@ -209,7 +208,7 @@ for param_json_path in optimizers_param_json_path:
         # loc[nir_caviar_forward_model_EW.shape[0]] = list(buf_dict.values())
         log_df.loc[log_df.shape[0]] = list(buf_dict_train.values())
         log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
-
+    optimizer_params = params_dict.copy()
     optimizer_params_buf = optimizer_params.copy()
     optimizer_params_buf = removekey(optimizer_params_buf, 'params')
     parameters = tuple(optimizer_params_buf.values())
