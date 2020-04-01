@@ -26,7 +26,7 @@ parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
 args = parser.parse_args()
 
-device = 'cuda'# if torch.cuda.is_available() else 'cpu'
+device = 'cuda'  # if torch.cuda.is_available() else 'cpu'
 best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
@@ -80,10 +80,12 @@ if args.resume:
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
+
 def removekey(d, key):
     r = dict(d)
     del r[key]
     return r
+
 
 # Training
 def train(epoch, batch_size):
@@ -107,7 +109,7 @@ def train(epoch, batch_size):
         correct += predicted.eq(targets).sum().item()
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-            % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+                     % (train_loss / (batch_idx + 1), 100. * correct / total, correct, total))
     return train_loss / (batch_idx + 1), 100. * correct / total, correct, total
 
 
@@ -131,11 +133,11 @@ def test(epoch, batch_size):
             correct += predicted.eq(targets).sum().item()
 
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
     return test_loss / (batch_idx + 1), 100. * correct / total
 
     # Save checkpoint.
-    acc = 100.*correct/total
+    acc = 100. * correct / total
     if acc > best_acc:
         print('Saving..')
         state = {
@@ -151,7 +153,6 @@ def test(epoch, batch_size):
 
 batch_sizes = [8, 64, 512]
 
-
 SGD_dict_params = {'params': net.parameters(),
                    'lr': [0.001, 0.01, 0.1],
                    'momentum': 0}
@@ -160,14 +161,10 @@ Adagrad_dict_params = {'params': net.parameters(),
                        'lr': 0.1}
 
 Adam_dict_params = {'params': net.parameters(),
-                       'lr': 0.1}
-
-LBFGS_dict_params = {'params': net.parameters(),
                     'lr': 0.1}
 
-
-
-
+LBFGS_dict_params = {'params': net.parameters(),
+                     'lr': 0.1}
 
 # optimizer_params_list = [SGD_dict_params, Adagrad_dict_params, Adam_dict_params, LBFGS_dict_params]
 #
@@ -195,12 +192,7 @@ for lr in SGD_dict_params['lr']:
         for batch_size in batch_sizes:
 
             net = ResNet18()
-            SGD_dict_params = {'params': net.parameters(),
-                               'lr': [0.001, 0.01, 0.1],
-                               'momentum': 0}
-            optimizer_params = SGD_dict_params.copy()
-            optimizer_params['lr'] = lr
-            optimizer_params['momentum'] = moment
+            optimizer_params = {'params': net.parameters(), 'lr': lr, 'momentum': moment}
             print(optimizer_params)
             optimizer = optim.SGD(**optimizer_params)
             optimizer_name = 'SGDMomentum'
@@ -217,23 +209,23 @@ for lr in SGD_dict_params['lr']:
             criterion = nn.CrossEntropyLoss()
             # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
             # optimizer = optim.SGD(**SGD_dict_params)
-            log_df = pd.DataFrame(columns=['epoch_number','train-test','time','loss','accuracy'])
+            log_df = pd.DataFrame(columns=['epoch_number', 'train-test', 'time', 'loss', 'accuracy'])
             ## Train:1
             ## Test: 0
             start_time = time.time()
-            for epoch in range(start_epoch, start_epoch+10):
+            for epoch in range(start_epoch, start_epoch + 10):
                 start_time = time.time()
                 # try:
                 train_loss, train_accuracy, _, _ = train(epoch, batch_size)
-                #except:
+                # except:
                 #    print("Error on train on " + optimizer_name)
                 #    break
                 iteration_train_time = time.time() - start_time
 
                 start_time = time.time()
-                #try:
+                # try:
                 test_loss, test_accuracy = test(epoch, batch_size)
-                #except:
+                # except:
                 #    print("Error on test on " + optimizer_name)
                 #    break
                 iteration_test_time = time.time() - start_time
@@ -244,10 +236,10 @@ for lr in SGD_dict_params['lr']:
                                   'loss': train_loss,
                                   'accuracy': train_accuracy}
                 buf_dict_test = {'epoch_number': epoch,
-                                  'train-test': 0,
-                                  'time': iteration_test_time,
-                                  'loss': test_loss,
-                                  'accuracy': test_accuracy}
+                                 'train-test': 0,
+                                 'time': iteration_test_time,
+                                 'loss': test_loss,
+                                 'accuracy': test_accuracy}
                 # loc[nir_caviar_forward_model_EW.shape[0]] = list(buf_dict.values())
                 log_df.loc[log_df.shape[0]] = list(buf_dict_train.values())
                 log_df.loc[log_df.shape[0]] = list(buf_dict_test.values())
@@ -255,7 +247,7 @@ for lr in SGD_dict_params['lr']:
             optimizer_params_buf = optimizer_params.copy()
             optimizer_params_buf = removekey(optimizer_params_buf, 'params')
             parameters = tuple(optimizer_params_buf.values())
-            string_parameters = "%1.2f_"*len(parameters)%parameters + str(batch_size) + '_'
+            string_parameters = "%1.2f_" * len(parameters) % parameters + str(batch_size) + '_'
             optimizer_params_buf['algorithm'] = optimizer_name
             now = datetime.datetime.now()
             dir_name = ("outputs/" + "ResNet18" + "/" + optimizer_name + "/"

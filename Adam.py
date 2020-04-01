@@ -192,10 +192,7 @@ for lr in Adam_dict_params['lr']:
     for batch_size in batch_sizes:
 
         net = ResNet18()
-        Adam_dict_params = {'params': net.parameters(),
-                           'lr': [0.001, 0.01, 0.1]}
-        optimizer_params = Adam_dict_params.copy()
-        optimizer_params['lr'] = lr
+        optimizer_params = {'params': net.parameters(), 'lr': lr}
         print(optimizer_params)
         optimizer = optim.Adam(**optimizer_params)
         optimizer_name = 'Adam'

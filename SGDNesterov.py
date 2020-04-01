@@ -195,13 +195,8 @@ for lr in SGD_dict_params['lr']:
         for batch_size in batch_sizes:
 
             net = ResNet18()
-            SGD_dict_params = {'params': net.parameters(),
-                               'lr': [0.001, 0.01, 0.1],
-                               'momentum': 0}
-            optimizer_params = SGD_dict_params.copy()
-            optimizer_params['lr'] = lr
-            optimizer_params['momentum'] = moment
-            optimizer_params['nesterov'] = True
+            optimizer_params = {'params': net.parameters(), 'lr': lr, 'momentum': moment, 'nesterov': True}
+
             print(optimizer_params)
             optimizer = optim.SGD(**optimizer_params)
             optimizer_name = 'SGDNesterov'
