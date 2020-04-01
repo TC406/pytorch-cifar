@@ -85,6 +85,8 @@ def removekey(d, key):
     del r[key]
     return r
 
+
+
 # Training
 def train(epoch, batch_size):
     print('\nEpoch: %d' % epoch)
@@ -95,14 +97,16 @@ def train(epoch, batch_size):
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
     for batch_idx, (inputs, targets) in enumerate(trainloader):
         inputs, targets = inputs.to(device), targets.to(device)
-        optimizer.zero_grad()
-        outputs = net(inputs)
-        loss = criterion(outputs, targets)
-        loss.backward()
-        optimizer.step()
+        def closure():
+            optimizer.zero_grad()
+            outputs = net(inputs)
+            loss = criterion(outputs, targets)
+            loss.backward()
+            return loss
+        optimizer.step(closure)
 
-        train_loss += loss.item()
-        _, predicted = outputs.max(1)
+        train_loss += closure().item()
+        _, predicted = net(inputs).max(1)
         total += targets.size(0)
         correct += predicted.eq(targets).sum().item()
 
@@ -151,19 +155,17 @@ def test(epoch, batch_size):
 
 batch_sizes = [8, 64, 512]
 
-
 SGD_dict_params = {'params': net.parameters(),
-                   'lr': [0.001, 0.01, 0.1],
-                   'momentum': 0}
+                   'lr': [0.001, 0.01, 0.1]}
 
 Adagrad_dict_params = {'params': net.parameters(),
-                       'lr': [0.001, 0.01, 0.1]}
-
-Adam_dict_params = {'params': net.parameters(),
                        'lr': 0.1}
 
+Adam_dict_params = {'params': net.parameters(),
+                       'lr': [0.001, 0.01, 0.1]}
+
 LBFGS_dict_params = {'params': net.parameters(),
-                    'lr': 0.1}
+                    'lr': [0.001, 0.01, 0.1]}
 
 
 
@@ -188,23 +190,22 @@ LBFGS_dict_params = {'params': net.parameters(),
 # for optimizer_params, optimizer, optimizer_name in zip(optimizer_params_list,
 #                                                        optimizers_list,
 #                                                        optimizer_name_list):
-optimizer_params = Adagrad_dict_params.copy()
-for lr in Adagrad_dict_params['lr']:
+optimizer_params = LBFGS_dict_params.copy()
+for lr in LBFGS_dict_params['lr']:
 
     for batch_size in batch_sizes:
 
         net = ResNet18()
         optimizer_params = {'params': net.parameters(), 'lr': lr}
         print(optimizer_params)
-        optimizer = optim.Adagrad(**optimizer_params)
-        optimizer_name = 'Adagrad'
+        optimizer = optim.LBFGS(**optimizer_params)
+        optimizer_name = 'LBFGS'
 
         print(optimizer_name)
 
         if device == 'cuda':
             net = torch.nn.DataParallel(net)
             cudnn.benchmark = True
-        print(device)
         net = net.to(device)
         # for model_name, net in zip(model_name_list, model_list):
         # alg_name = ["SGD"]
@@ -218,17 +219,12 @@ for lr in Adagrad_dict_params['lr']:
         start_time = time.time()
         for epoch in range(start_epoch, start_epoch+10):
             start_time = time.time()
-            #try:
             train_loss, train_accuracy, _, _ = train(epoch, batch_size)
-            #except:
-            #    print("Error on train on " + optimizer_name)
-            #    break
             iteration_train_time = time.time() - start_time
 
             start_time = time.time()
-            #try:
             test_loss, test_accuracy = test(epoch, batch_size)
-            #except:
+            # except:
             #    print("Error on test on " + optimizer_name)
             #    break
             iteration_test_time = time.time() - start_time
