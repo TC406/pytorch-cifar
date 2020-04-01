@@ -221,7 +221,7 @@ for lr in SGD_dict_params['lr']:
             ## Train:1
             ## Test: 0
             start_time = time.time()
-            for epoch in range(start_epoch, start_epoch+100):
+            for epoch in range(start_epoch, start_epoch+10):
                 start_time = time.time()
                 try:
                     train_loss, train_accuracy, _, _ = train(epoch, batch_size)

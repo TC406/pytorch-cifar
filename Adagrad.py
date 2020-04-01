@@ -26,7 +26,7 @@ parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
 args = parser.parse_args()
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = 'cuda'# if torch.cuda.is_available() else 'cpu'
 best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
@@ -218,21 +218,21 @@ for lr in Adagrad_dict_params['lr']:
         ## Train:1
         ## Test: 0
         start_time = time.time()
-        for epoch in range(start_epoch, start_epoch+100):
+        for epoch in range(start_epoch, start_epoch+10):
             start_time = time.time()
-            try:
-                train_loss, train_accuracy, _, _ = train(epoch, batch_size)
-            except:
-                print("Error on train on " + optimizer_name)
-                break
+            #try:
+            train_loss, train_accuracy, _, _ = train(epoch, batch_size)
+            #except:
+            #    print("Error on train on " + optimizer_name)
+            #    break
             iteration_train_time = time.time() - start_time
 
             start_time = time.time()
-            try:
-                test_loss, test_accuracy = test(epoch, batch_size)
-            except:
-                print("Error on test on " + optimizer_name)
-                break
+            #try:
+            test_loss, test_accuracy = test(epoch, batch_size)
+            #except:
+            #    print("Error on test on " + optimizer_name)
+            #    break
             iteration_test_time = time.time() - start_time
 
             buf_dict_train = {'epoch_number': epoch,
