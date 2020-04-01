@@ -162,6 +162,8 @@ for param_json_path in optimizers_param_json_path:
     with open(param_json_path,"r") as f:
         params_dict = json.load(f)
     batch_size = int(params_dict['batch_size'])
+    #### HARDCODED VALUE!!!
+    batch_size = 64
     del params_dict['batch_size']
     del params_dict['algorithm']
     print(params_dict,batch_size)
