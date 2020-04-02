@@ -180,7 +180,7 @@ for param_json_path in optimizers_param_json_path:
     # Train:1
     # Test: 0
     start_time = time.time()
-    for epoch in range(start_epoch, start_epoch+3):
+    for epoch in range(start_epoch, start_epoch+50):
         start_time = time.time()
         # try:
         train_loss, train_accuracy, _, _ = train(epoch, batch_size)
@@ -221,6 +221,8 @@ for param_json_path in optimizers_param_json_path:
     now = datetime.datetime.now()
     dir_name = ("outputs/" + "ResNet18" + "/" + optimizer_name + "/"
                 + string_parameters + now.strftime("_%d_%H_%m_%S"))
+    print(log_df.shape)
+    print(dir_name)
     Path(dir_name).mkdir(parents=True, exist_ok=True)
     with open(dir_name + '/parameters.json', 'w') as f:
         json.dump(optimizer_params_buf, f)
