@@ -153,6 +153,8 @@ def test(epoch, batch_size):
 optimizers_param_json_path = glob.glob("best_configs/*.json")
 
 for param_json_path in optimizers_param_json_path:
+    if "Adam" not in param_json_path:
+        continue
     net = ResNet18()
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
@@ -170,7 +172,7 @@ for param_json_path in optimizers_param_json_path:
     params_dict['params'] = net.parameters()
 
     if "Adam" in param_json_path:
-        optimizer = optim.SGD(**params_dict)
+        optimizer = optim.Adam(**params_dict)
     elif "RMSprop" in param_json_path:
         optimizer = optim.RMSprop(**params_dict)
     elif "SGD" in param_json_path:
